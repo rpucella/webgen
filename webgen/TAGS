@@ -25,16 +25,16 @@ func ProcessFileContent(13,103
 func ProcessTemplate(45,861
 type template_info 54,1116
 func findTemplate(59,1193
-func ProcessFilesContent(83,1993
+func ProcessFilesContent(83,2009
 
 cmd/webgen/main.go,266
 package main1,0
-type Content 22,356
-func main(29,444
-func Usage(62,1243
-func isContent(66,1328
-func isMarkdown(70,1412
-func WalkAndProcessContents(74,1492
-func WalkAndProcessMarkdowns(103,2094
-func WalkAndProcessPosts(132,2698
-func targetFilename(164,3352
+type Content 22,345
+func main(29,433
+func Usage(62,1232
+func isContent(66,1320
+func isMarkdown(70,1404
+func WalkAndProcessContents(74,1484
+func WalkAndProcessMarkdowns(103,2086
+func WalkAndProcessPosts(132,2690
+func targetFilename(164,3344

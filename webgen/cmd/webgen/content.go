@@ -63,12 +63,12 @@ func findTemplate(path string) ([]template_info, error) {
 	previous, _ := filepath.Abs(path)
 	current := filepath.Dir(previous)
 	for current != previous {
-		subtname := filepath.Join(current, SUBTEMPLATE)
+		subtname := filepath.Join(current, GENDIR, SUBTEMPLATE)
 		subtpl, err := template.ParseFiles(subtname)
 		if err == nil {
 			result = append(result, template_info{subtpl, subtname})
 		}
-		tname := filepath.Join(current, TEMPLATE)
+		tname := filepath.Join(current, GENDIR, TEMPLATE)
 		tpl, err := template.ParseFiles(tname)
 		if err == nil {
 			result = append(result, template_info{tpl, tname})

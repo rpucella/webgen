@@ -10,12 +10,12 @@ import (
 	"strings"
 )
 
-const TEMPLATE = "_gentemplate"
-const SUBTEMPLATE = "_gentemplate_sub"
-const MDTEMPLATE = "_gentemplate_md"
-const GENDIR = "_gensrc"
-const GENPOSTS = "_genposts"
-const POSTMD = "_post.md"
+const TEMPLATE = "__template"
+const SUBTEMPLATE = "__subtemplate"
+const MDTEMPLATE = "__mdtemplate"
+const GENDIR = "__src"
+const GENPOSTS = "__posts"
+const POSTMD = "__post.md"
 
 var rep *log.Logger = log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
@@ -60,7 +60,7 @@ func main() {
 }
 
 func Usage() {
-	rep.Println("USAGE: gen [<folder> | <file.content> | <file.md>]")
+	rep.Println("USAGE: webgen [<folder> | <file.content> | <file.md>]")
 }
 
 func isContent(fname string) bool {
