@@ -3,38 +3,38 @@ cmd/webgen/posts.go,236
 package main1,0
 type PostInfo 14,136
 func ProcessFilePost(20,204
-func ExtractPosts(48,931
-type byDate 70,1437
-func (s byDate) Len(72,1461
-func (s byDate) Swap(76,1507
-func (s byDate) Less(80,1572
-func ProcessFilesPosts(85,1697
+func ExtractPosts(47,845
+type byDate 69,1373
+func (s byDate) Len(71,1397
+func (s byDate) Swap(75,1443
+func (s byDate) Less(79,1508
+func ProcessFilesPosts(84,1633
 
 cmd/webgen/markdown.go,210
 package main1,0
 type Metadata 13,134
 func ProcessFileMarkdown(18,188
-func ExtractMetadata(45,913
-func ProcessMarkdownTemplate(83,1828
-func FindMarkdownTemplate(93,2168
-func ProcessFilesMarkdown(109,2636
+func ExtractMetadata(44,827
+func ProcessMarkdownTemplate(82,1748
+func FindMarkdownTemplate(92,2088
+func ProcessFilesMarkdown(108,2564
 
 cmd/webgen/content.go,167
 package main1,0
 func ProcessFileContent(13,103
-func ProcessTemplate(45,861
-type template_info 54,1116
-func findTemplate(59,1193
-func ProcessFilesContent(83,2009
+func ProcessTemplate(44,775
+type template_info 53,1030
+func findTemplate(58,1107
+func ProcessFilesContent(82,1923
 
 cmd/webgen/main.go,266
 package main1,0
-type Content 22,347
-func main(29,435
-func Usage(62,1234
-func isContent(66,1322
-func isMarkdown(70,1406
-func WalkAndProcessContents(74,1486
-func WalkAndProcessMarkdowns(103,2088
-func WalkAndProcessPosts(132,2692
-func targetFilename(164,3346
+type Content 22,353
+func main(29,441
+func Usage(62,1240
+func isContent(66,1328
+func isMarkdown(70,1412
+func WalkAndProcessContents(74,1492
+func WalkAndProcessMarkdowns(103,2094
+func WalkAndProcessPosts(132,2698
+func targetFilename(168,3593

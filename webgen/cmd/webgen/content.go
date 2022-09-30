@@ -11,8 +11,7 @@ import (
 )
 
 func ProcessFileContent(w io.Writer, fname string) error {
-	rep.Println("------------------------------------------------------------")
-	rep.Printf("Processing %s\n", fname)
+	rep.Printf("%s\n", fname)
 	templates, err := findTemplate(fname)
 	if err != nil {
 		return err
@@ -28,7 +27,7 @@ func ProcessFileContent(w io.Writer, fname string) error {
 	for _, tinfo := range templates {
 		tpl := tinfo.template
 		tname := tinfo.name
-		rep.Printf("Using template %s\n", tname)
+		rep.Printf("  using template %s\n", tname)
 		c := Content{"", "", "", current}
 		current, err = ProcessTemplate(tpl, c)
 		if err != nil {
@@ -104,7 +103,7 @@ func ProcessFilesContent(cwd string, path string) {
 				rep.Printf("ERROR: %s\n", err)
 				continue
 			}
-			rep.Printf("Wrote %s", target)
+			rep.Printf("  wrote %s", target)
 			w.Close()
 		}
 	}

@@ -15,9 +15,9 @@ const SUBTEMPLATE = "__sub.template"
 const MDTEMPLATE = "__md.template"
 const GENDIR = "__src"
 const GENPOSTS = "__posts"
-const POSTMD = "__post.md"
+const POSTMD = "index.md"
 
-var rep *log.Logger = log.New(os.Stdout, "", log.Ldate|log.Ltime)
+var rep *log.Logger = log.New(os.Stdout, "" /* log.Ldate| */, log.Ltime)
 
 type Content struct {
 	Title string
@@ -146,15 +146,19 @@ func WalkAndProcessPosts(root string) {
 		if filepath.Base(path) == ".git" {
 			return fs.SkipDir
 		}
-		if filepath.Base(path) == GENDIR {
-			// Skip GENDIR.
-			return fs.SkipDir
-		}
-		if filepath.Base(path) != GENPOSTS {
+		if filepath.Base(path) != GENDIR {
 			return nil
 		}
-		ProcessFilesPosts(cwd, path)
-		return nil
+		// We are in GENDIR - do we have a GENPOSTS subfolder?
+		target := filepath.Join(path, GENPOSTS)
+		stat, err := os.Stat(target)
+		if os.IsNotExist(err) || !stat.IsDir() {
+			// GENPOSTS doesn't exist (or is not a directory) so abort.
+			return fs.SkipDir
+		}
+		//fmt.Println("ABOUT TO PROCESS POSTS IN ", target)
+		ProcessFilesPosts(cwd, target)
+		return fs.SkipDir
 	}
 	if err := filepath.WalkDir(root, walk); err != nil {
 		rep.Fatal("ERROR: %s\n", err)

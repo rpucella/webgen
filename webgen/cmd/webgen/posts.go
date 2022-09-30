@@ -18,8 +18,7 @@ type PostInfo struct {
 }
 
 func ProcessFilePost(w io.Writer, key string, fname string) error {
-	rep.Println("------------------------------------------------------------")
-	rep.Printf("Processing %s\n", fname)
+	rep.Printf("%s\n", fname)
 	md, err := ioutil.ReadFile(fname)
 	if err != nil {
 		return err
@@ -31,7 +30,7 @@ func ProcessFilePost(w io.Writer, key string, fname string) error {
 	tpl, tname, err := FindMarkdownTemplate(fname)
 	output := []byte("")
 	if tpl != nil {
-		rep.Printf("Using markdown template %s\n", tname)
+		rep.Printf("  using markdown template %s\n", tname)
 		content := Content{metadata.Title, metadata.Date, key, template.HTML("")}
 		result, err := ProcessTemplate(tpl, content)
 		if err != nil {
@@ -52,7 +51,7 @@ func ExtractPosts(path string) ([]PostInfo, error) {
 	}
 	posts := make([]PostInfo, 0)
 	for _, d := range entries {
-		if d.IsDir() {
+		if d.IsDir() && d.Name() != GENDIR {
 			md, err := ioutil.ReadFile(filepath.Join(path, d.Name(), POSTMD))
 			if err != nil {
 				return nil, err
@@ -85,19 +84,21 @@ func (s byDate) Less(i int, j int) bool {
 func ProcessFilesPosts(cwd string, path string) {
 	// Called with path = path of the GENPOSTS folder.
 	// Get full list of posts.
+	rep.Printf("%s\n", path)
 	posts, err := ExtractPosts(path)
 	if err != nil {
+		rep.Printf("ERROR: %s\n", err)
 		return
 	}
 	sort.Sort(byDate(posts))
-	rep.Printf("Posts = %v\n", posts)
+	///rep.Printf("Posts = %v\n", posts)
 	relPath, err := filepath.Rel(cwd, path)
 	if err != nil {
 		relPath = path
 	}
 	// Clear out /post folder completely.
-	postDir := filepath.Join(relPath, "..", "post")
-	rep.Printf("Removing %s\n", postDir)
+	postDir := filepath.Join(relPath, "..", "..", "post")
+	rep.Printf("  removing %s\n", postDir)
 	os.RemoveAll(postDir)
 	if err := os.Mkdir(postDir, 0755); err != nil {
 		rep.Printf("ERROR: %s\n", err)
@@ -111,7 +112,7 @@ func ProcessFilesPosts(cwd string, path string) {
 		}
 		// Copy content of folder p.Key.
 		// This does not go into subfolders!
-		rep.Printf("Copying %s\n", p.Key)
+		rep.Printf("  copying %s\n", p.Key)
 		postEntries, err := os.ReadDir(filepath.Join(relPath, p.Key))
 		if err != nil {
 			rep.Printf("ERROR: %s\n", err)
@@ -158,7 +159,7 @@ func ProcessFilesPosts(cwd string, path string) {
 		}
 	}
 	// Extract list of summaries.
-	target := filepath.Join(relPath, "..", GENDIR, "index.content")
+	target := filepath.Join(relPath, "..", "index.content")
 	w, err := os.Create(target)
 	if err != nil {
 		w.Close()
@@ -171,7 +172,7 @@ func ProcessFilesPosts(cwd string, path string) {
 			rep.Printf("ERROR: %s\n", err)
 			continue
 		}
-		rep.Printf("Wrote to %s", target)
+		rep.Printf("  wrote to %s", target)
 	}
 	w.Close()
 }

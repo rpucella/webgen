@@ -16,8 +16,7 @@ type Metadata struct {
 }
 
 func ProcessFileMarkdown(w io.Writer, fname string) error {
-	rep.Println("------------------------------------------------------------")
-	rep.Printf("Processing %s\n", fname)
+	rep.Printf("%s\n", fname)
 	md, err := ioutil.ReadFile(fname)
 	if err != nil {
 		return err
@@ -29,7 +28,7 @@ func ProcessFileMarkdown(w io.Writer, fname string) error {
 	output := blackfriday.Run(restmd, blackfriday.WithNoExtensions())
 	tpl, tname, err := FindMarkdownTemplate(fname)
 	if tpl != nil {
-		rep.Printf("Using markdown template %s\n", tname)
+		rep.Printf("  using markdown template %s\n", tname)
 		result, err := ProcessMarkdownTemplate(tpl, metadata, template.HTML(output))
 		if err != nil {
 			return err
@@ -65,10 +64,10 @@ func ExtractMetadata(md []byte) (Metadata, []byte, error) {
 					switch fieldname {
 					case "title":
 						title = fieldvalue
-						rep.Printf("title = %s\n", title)
+						///rep.Printf("title = %s\n", title)
 					case "date":
 						date = fieldvalue
-						rep.Printf("date = %s\n", date)
+						///rep.Printf("date = %s\n", date)
 					}
 				}
 			}
@@ -95,7 +94,7 @@ func FindMarkdownTemplate(path string) (*template.Template, string, error) {
 	previous, _ := filepath.Abs(path)
 	current := filepath.Dir(previous)
 	for current != previous {
-		mdtname := filepath.Join(current, MDTEMPLATE)
+		mdtname := filepath.Join(current, GENDIR, MDTEMPLATE)
 		mdtpl, err := template.ParseFiles(mdtname)
 		if err == nil {
 			return mdtpl, mdtname, nil
@@ -130,7 +129,7 @@ func ProcessFilesMarkdown(cwd string, path string) {
 				rep.Printf("ERROR: %s\n", err)
 				continue
 			}
-			rep.Printf("Wrote %s", target)
+			rep.Printf("  wrote %s", target)
 			w.Close()
 		}
 	}
