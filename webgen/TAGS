@@ -29,12 +29,12 @@ func ProcessFilesContent(83,2009
 
 cmd/webgen/main.go,266
 package main1,0
-type Content 22,345
-func main(29,433
-func Usage(62,1232
-func isContent(66,1320
-func isMarkdown(70,1404
-func WalkAndProcessContents(74,1484
-func WalkAndProcessMarkdowns(103,2086
-func WalkAndProcessPosts(132,2690
-func targetFilename(164,3344
+type Content 22,347
+func main(29,435
+func Usage(62,1234
+func isContent(66,1322
+func isMarkdown(70,1406
+func WalkAndProcessContents(74,1486
+func WalkAndProcessMarkdowns(103,2088
+func WalkAndProcessPosts(132,2692
+func targetFilename(164,3346

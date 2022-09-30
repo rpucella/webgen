@@ -11,8 +11,8 @@ import (
 )
 
 const TEMPLATE = "__template"
-const SUBTEMPLATE = "__subtemplate"
-const MDTEMPLATE = "__mdtemplate"
+const SUBTEMPLATE = "__sub.template"
+const MDTEMPLATE = "__md.template"
 const GENDIR = "__src"
 const GENPOSTS = "__posts"
 const POSTMD = "__post.md"
