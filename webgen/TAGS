@@ -12,12 +12,12 @@ func ProcessFilesPosts(84,1633
 
 cmd/webgen/markdown.go,210
 package main1,0
-type Metadata 13,134
-func ProcessFileMarkdown(18,188
-func ExtractMetadata(44,827
-func ProcessMarkdownTemplate(82,1748
-func FindMarkdownTemplate(92,2088
-func ProcessFilesMarkdown(108,2564
+type Metadata 14,142
+func ProcessFileMarkdown(19,196
+func ExtractMetadata(45,835
+func ProcessMarkdownTemplate(87,1853
+func FindMarkdownTemplate(97,2193
+func ProcessFilesMarkdown(113,2669
 
 cmd/webgen/content.go,167
 package main1,0

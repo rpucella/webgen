@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type Metadata struct {
@@ -66,8 +67,12 @@ func ExtractMetadata(md []byte) (Metadata, []byte, error) {
 						title = fieldvalue
 						///rep.Printf("title = %s\n", title)
 					case "date":
-						date = fieldvalue
-						///rep.Printf("date = %s\n", date)
+						tDate, err := time.Parse("2006-01-02", fieldvalue)
+						if err != nil {
+							date = "?"
+						} else {
+							date = tDate.Format("Jan 2, 2006")
+						}
 					}
 				}
 			}
