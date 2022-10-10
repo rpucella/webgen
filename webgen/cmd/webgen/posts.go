@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // This type might be related to Metadata
@@ -15,33 +16,6 @@ type PostInfo struct {
 	Title string
 	Date  string
 	Key   string
-}
-
-func ProcessFilePost(w io.Writer, key string, fname string) error {
-	rep.Printf("%s\n", fname)
-	md, err := ioutil.ReadFile(fname)
-	if err != nil {
-		return err
-	}
-	metadata, _, err := ExtractMetadata(md)
-	if err != nil {
-		return err
-	}
-	tpl, tname, err := FindMarkdownTemplate(fname)
-	output := []byte("")
-	if tpl != nil {
-		rep.Printf("  using markdown template %s\n", tname)
-		content := Content{metadata.Title, metadata.Date, key, template.HTML("")}
-		result, err := ProcessTemplate(tpl, content)
-		if err != nil {
-			return err
-		}
-		output = []byte(result)
-	}
-	if _, err := w.Write(output); err != nil {
-		return err
-	}
-	return nil
 }
 
 func ExtractPosts(path string) ([]PostInfo, error) {
@@ -166,13 +140,71 @@ func ProcessFilesPosts(cwd string, path string) {
 		rep.Printf("ERROR: %s\n", err)
 		return
 	}
+	postsContent := make([]Content, 0, len(posts))
 	for _, p := range posts {
 		src := filepath.Join(relPath, p.Key, POSTMD)
-		if err := ProcessFilePost(w, p.Key, src); err != nil {
+		metadata, err := ProcessFilePost(p.Key, src)
+		if err != nil {
 			rep.Printf("ERROR: %s\n", err)
 			continue
 		}
-		rep.Printf("  wrote to %s", target)
+		content := Content{metadata.Title, metadata.Date, p.Key, template.HTML("")}
+		postsContent = append(postsContent, content)
+	}
+	tpl, tname, err := FindSummaryTemplate(relPath)
+	output := []byte("")
+	if tpl != nil {
+		rep.Printf("  using summary template %s\n", tname)
+		content := SummaryContent{postsContent}
+		result, err := ProcessSummaryTemplate(tpl, content)
+		if err != nil {
+			rep.Printf("ERROR: %s\n", err)
+			return
+		}
+		output = []byte(result)
+	}
+	if _, err := w.Write(output); err != nil {
+		rep.Printf("ERROR: %s\n", err)
+		return
 	}
 	w.Close()
+}
+
+type SummaryContent struct {
+	Posts []Content
+}
+
+func ProcessSummaryTemplate(tpl *template.Template, content SummaryContent) (template.HTML, error) {
+	var b strings.Builder
+	if err := tpl.Execute(&b, content); err != nil {
+		return template.HTML(""), err
+	}
+	result := template.HTML(b.String())
+	return result, nil
+}
+
+func ProcessFilePost(key string, fname string) (Metadata, error) {
+	rep.Printf("%s\n", fname)
+	md, err := ioutil.ReadFile(fname)
+	if err != nil {
+		return Metadata{}, err
+	}
+	metadata, _, err := ExtractMetadata(md)
+	return metadata, err
+}
+
+func FindSummaryTemplate(path string) (*template.Template, string, error) {
+	// Given a path, find the nearest enclosing __summary.template file.
+	previous, _ := filepath.Abs(path)
+	current := filepath.Dir(previous)
+	for current != previous {
+		mdtname := filepath.Join(current, GENDIR, SUMMARYTEMPLATE)
+		mdtpl, err := template.ParseFiles(mdtname)
+		if err == nil {
+			return mdtpl, mdtname, nil
+		}
+		previous = current
+		current = filepath.Dir(current)
+	}
+	return nil, "", nil
 }

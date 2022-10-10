@@ -10,9 +10,10 @@ import (
 	"strings"
 )
 
-const TEMPLATE = "__template"
+const TEMPLATE = "__content.template"
 const SUBTEMPLATE = "__sub.template"
-const MDTEMPLATE = "__md.template"
+const MDTEMPLATE = "__markdown.template"
+const SUMMARYTEMPLATE = "__summary.template"
 const GENDIR = "__src"
 const GENPOSTS = "__posts"
 const POSTMD = "index.md"
