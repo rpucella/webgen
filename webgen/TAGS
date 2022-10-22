@@ -1,4 +1,13 @@
 
+cmd/webgen/markdown.go,210
+package main1,0
+type Metadata 14,142
+func ProcessFileMarkdown(19,196
+func ExtractMetadata(45,835
+func ProcessMarkdownTemplate(87,1853
+func FindMarkdownTemplate(97,2193
+func ProcessFilesMarkdown(113,2669
+
 cmd/webgen/posts.go,337
 package main1,0
 type PostInfo 15,147
@@ -12,15 +21,6 @@ type SummaryContent 173,4249
 func ProcessSummaryTemplate(177,4298
 func ProcessFilePost(186,4567
 func FindSummaryTemplate(196,4807
-
-cmd/webgen/markdown.go,210
-package main1,0
-type Metadata 14,142
-func ProcessFileMarkdown(19,196
-func ExtractMetadata(45,835
-func ProcessMarkdownTemplate(87,1853
-func FindMarkdownTemplate(97,2193
-func ProcessFilesMarkdown(113,2669
 
 cmd/webgen/content.go,167
 package main1,0
