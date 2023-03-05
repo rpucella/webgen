@@ -62,16 +62,19 @@ func findTemplate(path string) ([]template_info, error) {
 	previous, _ := filepath.Abs(path)
 	current := filepath.Dir(previous)
 	for current != previous {
-		subtname := filepath.Join(current, GENDIR, SUBTEMPLATE)
-		subtpl, err := template.ParseFiles(subtname)
+		gdPath, err := identifyGenDirPath(current)
 		if err == nil {
-			result = append(result, template_info{subtpl, subtname})
-		}
-		tname := filepath.Join(current, GENDIR, TEMPLATE)
-		tpl, err := template.ParseFiles(tname)
-		if err == nil {
-			result = append(result, template_info{tpl, tname})
-			return result, nil
+			subtname := filepath.Join(gdPath, SUBTEMPLATE)
+			subtpl, err := template.ParseFiles(subtname)
+			if err == nil {
+				result = append(result, template_info{subtpl, subtname})
+			}
+			tname := filepath.Join(gdPath, TEMPLATE)
+			tpl, err := template.ParseFiles(tname)
+			if err == nil {
+				result = append(result, template_info{tpl, tname})
+				return result, nil
+			}
 		}
 		previous = current
 		current = filepath.Dir(current)
@@ -80,7 +83,11 @@ func findTemplate(path string) ([]template_info, error) {
 }
 
 func ProcessFilesContent(cwd string, path string) {
-	entries, err := os.ReadDir(filepath.Join(path, GENDIR))
+	genDir, err := identifyGenDir(path)
+	if err != nil {
+		return
+	}
+	entries, err := os.ReadDir(filepath.Join(path, genDir))
 	if err != nil {
 		// if we can't read GENDIR, skip.
 		return
@@ -98,7 +105,7 @@ func ProcessFilesContent(cwd string, path string) {
 				rep.Printf("ERROR: %s\n", err)
 				continue
 			}
-			if err := ProcessFileContent(w, filepath.Join(relPath, GENDIR, d.Name())); err != nil {
+			if err := ProcessFileContent(w, filepath.Join(relPath, genDir, d.Name())); err != nil {
 				w.Close()
 				rep.Printf("ERROR: %s\n", err)
 				continue

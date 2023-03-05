@@ -99,10 +99,13 @@ func FindMarkdownTemplate(path string) (*template.Template, string, error) {
 	previous, _ := filepath.Abs(path)
 	current := filepath.Dir(previous)
 	for current != previous {
-		mdtname := filepath.Join(current, GENDIR, MDTEMPLATE)
-		mdtpl, err := template.ParseFiles(mdtname)
+		gdPath, err := identifyGenDirPath(current)
 		if err == nil {
-			return mdtpl, mdtname, nil
+			mdtname := filepath.Join(gdPath, MDTEMPLATE)
+			mdtpl, err := template.ParseFiles(mdtname)
+			if err == nil {
+				return mdtpl, mdtname, nil
+			}
 		}
 		previous = current
 		current = filepath.Dir(current)
@@ -111,25 +114,29 @@ func FindMarkdownTemplate(path string) (*template.Template, string, error) {
 }
 
 func ProcessFilesMarkdown(cwd string, path string) {
-	entries, err := os.ReadDir(filepath.Join(path, GENDIR))
+	gdPath, err := identifyGenDirPath(path)
+	if err != nil {
+		return
+	}
+	entries, err := os.ReadDir(gdPath)
 	if err != nil {
 		// if we can't read GENDIR, skip.
 		return
 	}
 	for _, d := range entries {
 		if !d.IsDir() && isMarkdown(d.Name()) {
-			relPath, err := filepath.Rel(cwd, path)
+			relPath, err := filepath.Rel(cwd, gdPath)
 			if err != nil {
-				relPath = path
+				relPath = gdPath
 			}
-			target := filepath.Join(relPath, GENDIR, targetFilename(d.Name(), "md", "content"))
+			target := filepath.Join(relPath, targetFilename(d.Name(), "md", "content"))
 			w, err := os.Create(target)
 			if err != nil {
 				w.Close()
 				rep.Printf("ERROR: %s\n", err)
 				continue
 			}
-			if err := ProcessFileMarkdown(w, filepath.Join(relPath, GENDIR, d.Name())); err != nil {
+			if err := ProcessFileMarkdown(w, filepath.Join(relPath, d.Name())); err != nil {
 				w.Close()
 				rep.Printf("ERROR: %s\n", err)
 				continue

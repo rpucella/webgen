@@ -10,11 +10,11 @@ import (
 	"strings"
 )
 
-const TEMPLATE = "__content.template"
-const SUBTEMPLATE = "__sub.template"
-const MDTEMPLATE = "__markdown.template"
-const SUMMARYTEMPLATE = "__summary.template"
-const GENDIR = "__src"
+const TEMPLATE = "CONTENT.template"
+const SUBTEMPLATE = "SUB.template"
+const MDTEMPLATE = "MARKDOWN.template"
+const SUMMARYTEMPLATE = "SUMMARY.template"
+const GENDIR = "__src" // Can also have a leading .
 const GENPOSTS = "__posts"
 const POSTMD = "index.md"
 
@@ -72,6 +72,43 @@ func isMarkdown(fname string) bool {
 	return strings.HasSuffix(fname, ".md")
 }
 
+func isGenDir(path string) bool {
+	base := filepath.Base(path)
+	if base == GENDIR {
+		return true
+	}
+	if base == "."+GENDIR {
+		return true
+	}
+	return false
+}
+
+func identifyGenDir(path string) (string, error) {
+	fileinfo, err := os.Stat(filepath.Join(path, GENDIR))
+	if err != nil {
+		fileinfo, err := os.Stat(filepath.Join(path, "."+GENDIR))
+		if err != nil {
+			return "", err
+		}
+		if fileinfo.IsDir() {
+			return "." + GENDIR, nil
+		}
+		return "", fmt.Errorf("GENDIR not a directory")
+	}
+	if fileinfo.IsDir() {
+		return GENDIR, nil
+	}
+	return "", fmt.Errorf("GENDIR not a directory")
+}
+
+func identifyGenDirPath(path string) (string, error) {
+	genDir, err := identifyGenDir(path)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(path, genDir), nil
+}
+
 func WalkAndProcessContents(root string) {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -89,7 +126,7 @@ func WalkAndProcessContents(root string) {
 		if filepath.Base(path) == ".git" {
 			return fs.SkipDir
 		}
-		if filepath.Base(path) == GENDIR {
+		if isGenDir(path) {
 			// Skip GENDIR.
 			return fs.SkipDir
 		}
@@ -118,7 +155,7 @@ func WalkAndProcessMarkdowns(root string) {
 		if filepath.Base(path) == ".git" {
 			return fs.SkipDir
 		}
-		if filepath.Base(path) == GENDIR {
+		if isGenDir(path) {
 			// Skip GENDIR.
 			return fs.SkipDir
 		}
@@ -147,7 +184,7 @@ func WalkAndProcessPosts(root string) {
 		if filepath.Base(path) == ".git" {
 			return fs.SkipDir
 		}
-		if filepath.Base(path) != GENDIR {
+		if !isGenDir(path) {
 			return nil
 		}
 		// We are in GENDIR - do we have a GENPOSTS subfolder?

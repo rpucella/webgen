@@ -25,7 +25,7 @@ func ExtractPosts(path string) ([]PostInfo, error) {
 	}
 	posts := make([]PostInfo, 0)
 	for _, d := range entries {
-		if d.IsDir() && d.Name() != GENDIR {
+		if d.IsDir() && d.Name() != GENDIR && d.Name() != ("."+GENDIR) {
 			md, err := ioutil.ReadFile(filepath.Join(path, d.Name(), POSTMD))
 			if err != nil {
 				return nil, err
@@ -105,6 +105,11 @@ func ProcessFilesPosts(cwd string, path string) {
 					// We can only do that if we have the full list of posts
 					//  though, so we'll need to restructure to read all
 					//  posts, sort them by date, THEN process them.
+					// genDir, err := identifyGenDir(dstPath)
+					// if err != nil {
+					// 	rep.Printf("ERROR: %s\n", err)
+					// 	continue
+					// }
 					dstPath = filepath.Join(dstPath, GENDIR)
 					dstName = "index.md"
 					if err := os.Mkdir(dstPath, 0755); err != nil {
@@ -198,10 +203,13 @@ func FindSummaryTemplate(path string) (*template.Template, string, error) {
 	previous, _ := filepath.Abs(path)
 	current := filepath.Dir(previous)
 	for current != previous {
-		mdtname := filepath.Join(current, GENDIR, SUMMARYTEMPLATE)
-		mdtpl, err := template.ParseFiles(mdtname)
+		gdPath, err := identifyGenDirPath(current)
 		if err == nil {
-			return mdtpl, mdtname, nil
+			mdtname := filepath.Join(gdPath, SUMMARYTEMPLATE)
+			mdtpl, err := template.ParseFiles(mdtname)
+			if err == nil {
+				return mdtpl, mdtname, nil
+			}
 		}
 		previous = current
 		current = filepath.Dir(current)
