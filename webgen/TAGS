@@ -8,10 +8,10 @@ func (s byDate) Len(45,795
 func (s byDate) Swap(49,841
 func (s byDate) Less(53,906
 func ProcessFilesPosts(58,1031
-type SummaryContent 178,4416
-func ProcessSummaryTemplate(182,4465
-func ProcessFilePost(191,4734
-func FindSummaryTemplate(201,4974
+type SummaryContent 187,4636
+func ProcessSummaryTemplate(191,4685
+func ProcessFilePost(200,4954
+func FindSummaryTemplate(210,5194
 
 cmd/webgen/markdown.go,210
 package main1,0
@@ -30,17 +30,19 @@ type template_info 53,1030
 func findTemplate(58,1107
 func ProcessFilesContent(85,1983
 
-cmd/webgen/main.go,353
+cmd/webgen/main.go,410
 package main1,0
-type Content 23,433
-func main(30,521
-func Usage(63,1320
-func isContent(67,1408
-func isMarkdown(71,1492
-func isGenDir(75,1572
-func identifyGenDir(86,1732
-func identifyGenDirPath(104,2163
-func WalkAndProcessContents(112,2336
-func WalkAndProcessMarkdowns(141,2923
-func WalkAndProcessPosts(170,3512
-func targetFilename(206,4393
+type Content 23,466
+func main(30,554
+func Usage(63,1353
+func isContent(67,1441
+func isMarkdown(71,1525
+func isGenDir(75,1605
+func isGenPosts(86,1765
+func identifyGenDir(97,1931
+func identifyGenPosts(115,2362
+func identifyGenDirPath(133,2807
+func WalkAndProcessContents(141,2980
+func WalkAndProcessMarkdowns(173,3616
+func WalkAndProcessPosts(205,4254
+func targetFilename(247,5247

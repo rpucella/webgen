@@ -56,10 +56,14 @@ func (s byDate) Less(i int, j int) bool {
 }
 
 func ProcessFilesPosts(cwd string, path string) {
-	// Called with path = path of the GENPOSTS folder.
+	genPosts, err := identifyGenPosts(path)
+	if err != nil {
+		return
+	}
 	// Get full list of posts.
-	rep.Printf("%s\n", path)
-	posts, err := ExtractPosts(path)
+	postPath := filepath.Join(path, genPosts)
+	rep.Printf("%s\n", postPath)
+	posts, err := ExtractPosts(postPath)
 	if err != nil {
 		rep.Printf("ERROR: %s\n", err)
 		return
@@ -71,7 +75,7 @@ func ProcessFilesPosts(cwd string, path string) {
 		relPath = path
 	}
 	// Clear out /post folder completely.
-	postDir := filepath.Join(relPath, "..", "..", "post")
+	postDir := filepath.Join(relPath, "post")
 	rep.Printf("  removing %s\n", postDir)
 	os.RemoveAll(postDir)
 	if err := os.Mkdir(postDir, 0755); err != nil {
@@ -87,14 +91,14 @@ func ProcessFilesPosts(cwd string, path string) {
 		// Copy content of folder p.Key.
 		// This does not go into subfolders!
 		rep.Printf("  copying %s\n", p.Key)
-		postEntries, err := os.ReadDir(filepath.Join(relPath, p.Key))
+		postEntries, err := os.ReadDir(filepath.Join(relPath, genPosts, p.Key))
 		if err != nil {
 			rep.Printf("ERROR: %s\n", err)
 			continue
 		}
 		for _, f := range postEntries {
 			if !f.IsDir() {
-				srcPath := filepath.Join(relPath, p.Key)
+				srcPath := filepath.Join(relPath, genPosts, p.Key)
 				srcName := f.Name()
 				dstPath := filepath.Join(postDir, p.Key)
 				dstName := f.Name()
@@ -138,16 +142,21 @@ func ProcessFilesPosts(cwd string, path string) {
 		}
 	}
 	// Extract list of summaries.
-	target := filepath.Join(relPath, "..", "index.content")
-	w, err := os.Create(target)
+	genDir, err := identifyGenDir(relPath)
 	if err != nil {
-		w.Close()
+		rep.Printf("ERROR: %s\n", err)
+		return
+	}
+	target := filepath.Join(relPath, genDir, "index.content")
+	w, err := os.Create(target)
+	defer w.Close()
+	if err != nil {
 		rep.Printf("ERROR: %s\n", err)
 		return
 	}
 	postsContent := make([]Content, 0, len(posts))
 	for _, p := range posts {
-		src := filepath.Join(relPath, p.Key, POSTMD)
+		src := filepath.Join(relPath, genPosts, p.Key, POSTMD)
 		metadata, err := ProcessFilePost(p.Key, src)
 		if err != nil {
 			rep.Printf("ERROR: %s\n", err)
@@ -156,7 +165,7 @@ func ProcessFilesPosts(cwd string, path string) {
 		content := Content{metadata.Title, metadata.Date, p.Key, template.HTML("")}
 		postsContent = append(postsContent, content)
 	}
-	tpl, tname, err := FindSummaryTemplate(relPath)
+	tpl, tname, err := FindSummaryTemplate(postPath)
 	output := []byte("")
 	if tpl != nil {
 		rep.Printf("  using summary template %s\n", tname)
@@ -172,7 +181,7 @@ func ProcessFilesPosts(cwd string, path string) {
 		rep.Printf("ERROR: %s\n", err)
 		return
 	}
-	w.Close()
+	rep.Printf("  wrote %s", target)
 }
 
 type SummaryContent struct {
@@ -203,6 +212,7 @@ func FindSummaryTemplate(path string) (*template.Template, string, error) {
 	previous, _ := filepath.Abs(path)
 	current := filepath.Dir(previous)
 	for current != previous {
+		///rep.Printf("[trying %s]\n", current)
 		gdPath, err := identifyGenDirPath(current)
 		if err == nil {
 			mdtname := filepath.Join(gdPath, SUMMARYTEMPLATE)

@@ -14,8 +14,8 @@ const TEMPLATE = "CONTENT.template"
 const SUBTEMPLATE = "SUB.template"
 const MDTEMPLATE = "MARKDOWN.template"
 const SUMMARYTEMPLATE = "SUMMARY.template"
-const GENDIR = "__src" // Can also have a leading .
-const GENPOSTS = "__posts"
+const GENDIR = "__src"     // Can also have a leading .
+const GENPOSTS = "__posts" // Can also have a leading .
 const POSTMD = "index.md"
 
 var rep *log.Logger = log.New(os.Stdout, "" /* log.Ldate| */, log.Ltime)
@@ -83,6 +83,17 @@ func isGenDir(path string) bool {
 	return false
 }
 
+func isGenPosts(path string) bool {
+	base := filepath.Base(path)
+	if base == GENPOSTS {
+		return true
+	}
+	if base == "."+GENPOSTS {
+		return true
+	}
+	return false
+}
+
 func identifyGenDir(path string) (string, error) {
 	fileinfo, err := os.Stat(filepath.Join(path, GENDIR))
 	if err != nil {
@@ -99,6 +110,24 @@ func identifyGenDir(path string) (string, error) {
 		return GENDIR, nil
 	}
 	return "", fmt.Errorf("GENDIR not a directory")
+}
+
+func identifyGenPosts(path string) (string, error) {
+	fileinfo, err := os.Stat(filepath.Join(path, GENPOSTS))
+	if err != nil {
+		fileinfo, err := os.Stat(filepath.Join(path, "."+GENPOSTS))
+		if err != nil {
+			return "", err
+		}
+		if fileinfo.IsDir() {
+			return "." + GENPOSTS, nil
+		}
+		return "", fmt.Errorf("GENPOSTS not a directory")
+	}
+	if fileinfo.IsDir() {
+		return GENPOSTS, nil
+	}
+	return "", fmt.Errorf("GENPOSTS not a directory")
 }
 
 func identifyGenDirPath(path string) (string, error) {
@@ -130,6 +159,9 @@ func WalkAndProcessContents(root string) {
 			// Skip GENDIR.
 			return fs.SkipDir
 		}
+		if isGenPosts(path) {
+			return fs.SkipDir
+		}
 		ProcessFilesContent(cwd, path)
 		return nil
 	}
@@ -159,6 +191,9 @@ func WalkAndProcessMarkdowns(root string) {
 			// Skip GENDIR.
 			return fs.SkipDir
 		}
+		if isGenPosts(path) {
+			return fs.SkipDir
+		}
 		ProcessFilesMarkdown(cwd, path)
 		return nil
 	}
@@ -184,19 +219,25 @@ func WalkAndProcessPosts(root string) {
 		if filepath.Base(path) == ".git" {
 			return fs.SkipDir
 		}
-		if !isGenDir(path) {
-			return nil
-		}
-		// We are in GENDIR - do we have a GENPOSTS subfolder?
-		target := filepath.Join(path, GENPOSTS)
-		stat, err := os.Stat(target)
-		if os.IsNotExist(err) || !stat.IsDir() {
-			// GENPOSTS doesn't exist (or is not a directory) so abort.
+		if isGenDir(path) {
 			return fs.SkipDir
 		}
-		//fmt.Println("ABOUT TO PROCESS POSTS IN ", target)
-		ProcessFilesPosts(cwd, target)
-		return fs.SkipDir
+		if isGenPosts(path) {
+			return fs.SkipDir
+		}
+		// if !isGenDir(path) {
+		// 	return nil
+		// }
+		// We are in GENDIR - do we have a GENPOSTS subfolder?
+		// target := filepath.Join(path, GENPOSTS)
+		// stat, err := os.Stat(target)
+		// if os.IsNotExist(err) || !stat.IsDir() {
+		// 	// GENPOSTS doesn't exist (or is not a directory) so abort.
+		// 	return fs.SkipDir
+		// }
+		//fmt.Println("ABOUT TO PROCESS POSTS IN ", path)
+		ProcessFilesPosts(cwd, path)
+		return nil
 	}
 	if err := filepath.WalkDir(root, walk); err != nil {
 		rep.Fatal("ERROR: %s\n", err)
