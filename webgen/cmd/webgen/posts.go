@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -15,9 +14,10 @@ import (
 // This type might be related to Metadata
 
 type PostInfo struct {
-	Title string
-	Date  time.Time
-	Key   string
+	Title   string
+	Date    time.Time
+	Reading string
+	Key     string
 }
 
 func ExtractPosts(path string) ([]PostInfo, error) {
@@ -36,7 +36,7 @@ func ExtractPosts(path string) ([]PostInfo, error) {
 			if err != nil {
 				return nil, err
 			}
-			posts = append(posts, PostInfo{metadata.Title, metadata.Date, d.Name()})
+			posts = append(posts, PostInfo{metadata.Title, metadata.Date, metadata.Reading, d.Name()})
 		}
 	}
 	return posts, nil
@@ -157,7 +157,6 @@ func ProcessFilesPosts(cwd string, path string) {
 		return
 	}
 	postsContent := make([]Content, 0, len(posts))
-	fmt.Printf("%v\n", posts)
 	for _, p := range posts {
 		src := filepath.Join(relPath, genPosts, p.Key, POSTMD)
 		metadata, err := ProcessFilePost(p.Key, src)
@@ -165,7 +164,7 @@ func ProcessFilesPosts(cwd string, path string) {
 			rep.Printf("ERROR: %s\n", err)
 			continue
 		}
-		content := Content{metadata.Title, metadata.Date, FormatDate(metadata.Date), p.Key, template.HTML("")}
+		content := Content{metadata.Title, metadata.Date, FormatDate(metadata.Date), metadata.Reading, p.Key, template.HTML("")}
 		postsContent = append(postsContent, content)
 	}
 	tpl, tname, err := FindSummaryTemplate(postPath)

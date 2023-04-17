@@ -25,6 +25,7 @@ type Content struct {
 	Title         string
 	Date          time.Time
 	FormattedDate string
+	Reading       string
 	Key           string
 	Body          template.HTML
 }

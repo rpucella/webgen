@@ -1,49 +1,49 @@
 
 cmd/webgen/posts.go,337
 package main1,0
-type PostInfo 17,162
-func ExtractPosts(23,233
-type byDate 45,789
-func (s byDate) Len(47,813
-func (s byDate) Swap(51,859
-func (s byDate) Less(55,924
-func ProcessFilesPosts(60,1054
-type SummaryContent 190,4713
-func ProcessSummaryTemplate(194,4762
-func ProcessFilePost(203,5031
-func FindSummaryTemplate(213,5271
+type PostInfo 16,155
+func ExtractPosts(23,248
+type byDate 45,822
+func (s byDate) Len(47,846
+func (s byDate) Swap(51,892
+func (s byDate) Less(55,957
+func ProcessFilesPosts(60,1087
+type SummaryContent 189,4737
+func ProcessSummaryTemplate(193,4786
+func ProcessFilePost(202,5055
+func FindSummaryTemplate(212,5295
 
 cmd/webgen/markdown.go,236
 package main1,0
 type Metadata 14,142
-func ProcessFileMarkdown(19,199
-func ExtractMetadata(45,838
-func FormatDate(87,1851
-func ProcessMarkdownTemplate(95,1977
-func FindMarkdownTemplate(105,2344
-func ProcessFilesMarkdown(124,2883
+func ProcessFileMarkdown(20,219
+func ExtractMetadata(46,858
+func FormatDate(90,1900
+func ProcessMarkdownTemplate(98,2026
+func FindMarkdownTemplate(108,2411
+func ProcessFilesMarkdown(127,2950
 
 cmd/webgen/content.go,167
 package main1,0
 func ProcessFileContent(14,111
-func ProcessTemplate(45,796
-type template_info 54,1051
-func findTemplate(59,1128
-func ProcessFilesContent(86,2004
+func ProcessTemplate(45,800
+type template_info 54,1055
+func findTemplate(59,1132
+func ProcessFilesContent(86,2008
 
-cmd/webgen/main.go,410
+cmd/webgen/main.go,411
 package main1,0
 type Content 24,474
-func main(32,619
-func Usage(65,1418
-func isContent(69,1506
-func isMarkdown(73,1590
-func isGenDir(77,1670
-func isGenPosts(88,1830
-func identifyGenDir(99,1996
-func identifyGenPosts(117,2427
-func identifyGenDirPath(135,2872
-func WalkAndProcessContents(143,3045
-func WalkAndProcessMarkdowns(175,3681
-func WalkAndProcessPosts(207,4319
-func targetFilename(249,5312
+func main(33,641
+func Usage(66,1440
+func isContent(70,1528
+func isMarkdown(74,1612
+func isGenDir(78,1692
+func isGenPosts(89,1852
+func identifyGenDir(100,2018
+func identifyGenPosts(118,2449
+func identifyGenDirPath(136,2894
+func WalkAndProcessContents(144,3067
+func WalkAndProcessMarkdowns(176,3703
+func WalkAndProcessPosts(208,4341
+func targetFilename(250,5334

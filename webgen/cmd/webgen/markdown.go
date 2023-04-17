@@ -12,8 +12,9 @@ import (
 )
 
 type Metadata struct {
-	Title string
-	Date  time.Time
+	Title   string
+	Date    time.Time
+	Reading string
 }
 
 func ProcessFileMarkdown(w io.Writer, fname string) error {
@@ -45,6 +46,7 @@ func ProcessFileMarkdown(w io.Writer, fname string) error {
 func ExtractMetadata(md []byte) (Metadata, []byte, error) {
 	title := ""
 	date := time.Time{}
+	reading := ""
 	lines := strings.Split(string(md), "\n")
 	foundMetadata := false
 	for idx, line := range lines {
@@ -54,7 +56,7 @@ func ExtractMetadata(md []byte) (Metadata, []byte, error) {
 				if foundMetadata {
 					// We're done.
 					rest := []byte(strings.Join(lines[idx+1:], "\n"))
-					return Metadata{title, date}, rest, nil
+					return Metadata{title, date, reading}, rest, nil
 				}
 				foundMetadata = true
 			} else if foundMetadata {
@@ -65,7 +67,8 @@ func ExtractMetadata(md []byte) (Metadata, []byte, error) {
 					switch fieldname {
 					case "title":
 						title = fieldvalue
-						///rep.Printf("title = %s\n", title)
+					case "reading":
+						reading = fieldvalue
 					case "date":
 						tDate, err := time.Parse("2006-01-02", fieldvalue)
 						if err != nil {
@@ -93,7 +96,7 @@ func FormatDate(date time.Time) string {
 }
 
 func ProcessMarkdownTemplate(tpl *template.Template, metadata Metadata, content template.HTML) (template.HTML, error) {
-	c := Content{metadata.Title, metadata.Date, FormatDate(metadata.Date), "", content}
+	c := Content{metadata.Title, metadata.Date, FormatDate(metadata.Date), metadata.Reading, "", content}
 	var b strings.Builder
 	if err := tpl.Execute(&b, c); err != nil {
 		return template.HTML(""), err
