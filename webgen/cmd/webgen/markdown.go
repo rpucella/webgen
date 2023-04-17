@@ -13,7 +13,7 @@ import (
 
 type Metadata struct {
 	Title string
-	Date  string
+	Date  time.Time
 }
 
 func ProcessFileMarkdown(w io.Writer, fname string) error {
@@ -44,7 +44,7 @@ func ProcessFileMarkdown(w io.Writer, fname string) error {
 
 func ExtractMetadata(md []byte) (Metadata, []byte, error) {
 	title := ""
-	date := ""
+	date := time.Time{}
 	lines := strings.Split(string(md), "\n")
 	foundMetadata := false
 	for idx, line := range lines {
@@ -69,9 +69,9 @@ func ExtractMetadata(md []byte) (Metadata, []byte, error) {
 					case "date":
 						tDate, err := time.Parse("2006-01-02", fieldvalue)
 						if err != nil {
-							date = "?"
+							date = time.Time{}
 						} else {
-							date = tDate.Format("Jan 2, 2006")
+							date = tDate
 						}
 					}
 				}
@@ -84,8 +84,16 @@ func ExtractMetadata(md []byte) (Metadata, []byte, error) {
 	return Metadata{}, md, nil
 }
 
+func FormatDate(date time.Time) string {
+	if date.IsZero() {
+		return "-"
+	} else {
+		return date.Format("Jan 2, 2006")
+	}
+}
+
 func ProcessMarkdownTemplate(tpl *template.Template, metadata Metadata, content template.HTML) (template.HTML, error) {
-	c := Content{metadata.Title, metadata.Date, "", content}
+	c := Content{metadata.Title, metadata.Date, FormatDate(metadata.Date), "", content}
 	var b strings.Builder
 	if err := tpl.Execute(&b, c); err != nil {
 		return template.HTML(""), err

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -8,13 +9,14 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 // This type might be related to Metadata
 
 type PostInfo struct {
 	Title string
-	Date  string
+	Date  time.Time
 	Key   string
 }
 
@@ -52,7 +54,7 @@ func (s byDate) Swap(i int, j int) {
 
 func (s byDate) Less(i int, j int) bool {
 	// Alphabetical order is fine for now for dates.
-	return s[i].Date > s[j].Date
+	return s[i].Date.After(s[j].Date)
 }
 
 func ProcessFilesPosts(cwd string, path string) {
@@ -155,6 +157,7 @@ func ProcessFilesPosts(cwd string, path string) {
 		return
 	}
 	postsContent := make([]Content, 0, len(posts))
+	fmt.Printf("%v\n", posts)
 	for _, p := range posts {
 		src := filepath.Join(relPath, genPosts, p.Key, POSTMD)
 		metadata, err := ProcessFilePost(p.Key, src)
@@ -162,7 +165,7 @@ func ProcessFilesPosts(cwd string, path string) {
 			rep.Printf("ERROR: %s\n", err)
 			continue
 		}
-		content := Content{metadata.Title, metadata.Date, p.Key, template.HTML("")}
+		content := Content{metadata.Title, metadata.Date, FormatDate(metadata.Date), p.Key, template.HTML("")}
 		postsContent = append(postsContent, content)
 	}
 	tpl, tname, err := FindSummaryTemplate(postPath)

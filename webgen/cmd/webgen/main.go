@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const TEMPLATE = "CONTENT.template"
@@ -21,10 +22,11 @@ const POSTMD = "index.md"
 var rep *log.Logger = log.New(os.Stdout, "" /* log.Ldate| */, log.Ltime)
 
 type Content struct {
-	Title string
-	Date  string
-	Key   string
-	Body  template.HTML
+	Title         string
+	Date          time.Time
+	FormattedDate string
+	Key           string
+	Body          template.HTML
 }
 
 func main() {

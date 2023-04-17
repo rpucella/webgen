@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func ProcessFileContent(w io.Writer, fname string) error {
@@ -28,7 +29,7 @@ func ProcessFileContent(w io.Writer, fname string) error {
 		tpl := tinfo.template
 		tname := tinfo.name
 		rep.Printf("  using template %s\n", tname)
-		c := Content{"", "", "", current}
+		c := Content{"", time.Time{}, "", "", current}
 		current, err = ProcessTemplate(tpl, c)
 		if err != nil {
 			return err
