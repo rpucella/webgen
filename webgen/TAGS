@@ -31,19 +31,20 @@ type template_info 54,1055
 func findTemplate(59,1132
 func ProcessFilesContent(86,2008
 
-cmd/webgen/main.go,411
+cmd/webgen/main.go,445
 package main1,0
-type Content 24,474
-func main(33,641
-func Usage(66,1440
-func isContent(70,1528
-func isMarkdown(74,1612
-func isGenDir(78,1692
-func isGenPosts(89,1852
-func identifyGenDir(100,2018
-func identifyGenPosts(118,2449
-func identifyGenDirPath(136,2894
-func WalkAndProcessContents(144,3067
-func WalkAndProcessMarkdowns(176,3703
-func WalkAndProcessPosts(208,4341
-func targetFilename(250,5334
+type Content 24,439
+func main(33,606
+func Usage(66,1405
+func isContent(70,1493
+func isMarkdown(74,1577
+func isGenDir(78,1657
+func isGenPosts(89,1817
+func isSkippedDirectory(100,1983
+func identifyGenDir(113,2175
+func identifyGenPosts(131,2606
+func identifyGenDirPath(149,3111
+func WalkAndProcessContents(157,3284
+func WalkAndProcessMarkdowns(182,3800
+func WalkAndProcessPosts(207,4318
+func targetFilename(232,4829
