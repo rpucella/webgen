@@ -116,7 +116,7 @@ func ProcessFilesPosts(cwd string, path string) {
 					// 	rep.Printf("ERROR: %s\n", err)
 					// 	continue
 					// }
-					dstPath = filepath.Join(dstPath, GENDIR)
+					dstPath = filepath.Join(dstPath, "."+GENDIR)
 					dstName = "index.md"
 					if err := os.Mkdir(dstPath, 0755); err != nil {
 						rep.Printf("ERROR: %s\n", err)
@@ -210,7 +210,7 @@ func ProcessFilePost(key string, fname string) (Metadata, error) {
 }
 
 func FindSummaryTemplate(path string) (*template.Template, string, error) {
-	// Given a path, find the nearest enclosing __summary.template file.
+	// Given a path, find the nearest enclosing SUMMARY.template file.
 	previous, _ := filepath.Abs(path)
 	current := filepath.Dir(previous)
 	for current != previous {
