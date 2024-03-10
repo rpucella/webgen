@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -40,6 +41,78 @@ func ProcessFileMarkdown(w io.Writer, fname string) error {
 	if _, err := w.Write(output); err != nil {
 		return err
 	}
+	return nil
+}
+
+const draftTemplate = `
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+          font-family: serif;
+          font-size: 24px;
+          margin: 0px 128px;
+      }
+
+      p {
+          line-height: 2.5;
+          margin: 32px 0;
+      }
+
+      p code {
+          font-size: 20px;
+      }
+
+      pre {
+          font-size: 16px;
+          line-height: initial;
+          margin: 32px 0;
+          border-left: 4px solid #333333;
+          padding-left: 16px;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+          font-weight: normal;
+          margin: 64px 0 32px 0;
+      }
+
+    </style>
+  </head>
+  <body>
+{{.}}
+  </body>
+</html>
+`
+
+func ProcessFileMarkdownDraft(fname string) error {
+	rep.Printf("%s\n", fname)
+	f, err := os.CreateTemp("", "draft*.html")
+	if err != nil {
+		return err
+	}
+	md, err := ioutil.ReadFile(fname)
+	if err != nil {
+		return err
+	}
+	_, restmd, err := ExtractMetadata(md)
+	if err != nil {
+		return err
+	}
+	body := blackfriday.Run(restmd, blackfriday.WithNoExtensions())
+	mdtpl, err := template.New("draft").Parse(draftTemplate)
+	var sb strings.Builder
+	if err := mdtpl.Execute(&sb, template.HTML(body)); err != nil {
+		return err
+	}
+	output := []byte(template.HTML(sb.String()))
+	//rep.Println(sb.String())
+	if _, err := f.Write(output); err != nil {
+		return err
+	}
+	rep.Printf("Draft file: %s\n", f.Name())
+	cmd := exec.Command("open", "-a", "Firefox", f.Name())
+	cmd.Run()
 	return nil
 }
 

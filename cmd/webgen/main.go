@@ -30,11 +30,18 @@ type Content struct {
 	Body          template.HTML
 }
 
+type flags struct {
+	draft bool
+	help  bool
+}
+
 func main() {
 
-	args := os.Args[1:]
+	args, flags := ClassifyArgs(os.Args[1:])
 
-	if len(args) == 0 {
+	if flags.help {
+		Usage()
+	} else if len(args) == 0 {
 		WalkAndProcessPosts(".")
 		WalkAndProcessMarkdowns(".")
 		WalkAndProcessContents(".")
@@ -52,8 +59,14 @@ func main() {
 				rep.Fatal(fmt.Sprintf("ERROR: %s\n", err))
 			}
 		} else if isMarkdown(args[0]) {
-			if err := ProcessFileMarkdown(os.Stdout, args[0]); err != nil {
-				rep.Fatal(fmt.Sprintf("ERROR: %s\n", err))
+			if flags.draft {
+				if err := ProcessFileMarkdownDraft(args[0]); err != nil {
+					rep.Fatal(fmt.Sprintf("ERROR: %s\n", err))
+				}
+			} else {
+				if err := ProcessFileMarkdown(os.Stdout, args[0]); err != nil {
+					rep.Fatal(fmt.Sprintf("ERROR: %s\n", err))
+				}
 			}
 		} else {
 			rep.Fatal(fmt.Sprintf("ERROR: unknown file extension %s\n", args[0]))
@@ -64,7 +77,24 @@ func main() {
 }
 
 func Usage() {
-	rep.Println("USAGE: webgen [<folder> | <file.content> | <file.md>]")
+	rep.Println("USAGE: webgen [--help] [--draft] [<folder> | <file.content> | <file.md>]")
+}
+
+func ClassifyArgs(args []string) ([]string, flags) {
+	rArgs := make([]string, 0, len(args))
+	flags := flags{}
+	for _, arg := range args {
+		if arg == "--draft" {
+			flags.draft = true
+		} else if arg == "--help" {
+			flags.help = true
+		} else if strings.HasPrefix(arg, "--") {
+			rep.Println(fmt.Sprintf("Unknown flag: %s", strings.TrimPrefix(arg, "--")))
+		} else {
+			rArgs = append(rArgs, arg)
+		}
+	}
+	return rArgs, flags
 }
 
 func isContent(fname string) bool {
