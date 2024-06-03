@@ -77,7 +77,7 @@ func ProcessFilesPosts(cwd string, path string) {
 		relPath = path
 	}
 	// Clear out /post folder completely.
-	postDir := filepath.Join(relPath, "post")
+	postDir := filepath.Join(relPath, POSTDIR)
 	rep.Printf("  removing %s\n", postDir)
 	os.RemoveAll(postDir)
 	if err := os.Mkdir(postDir, 0755); err != nil {

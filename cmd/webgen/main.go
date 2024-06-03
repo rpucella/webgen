@@ -18,6 +18,7 @@ const SUMMARYTEMPLATE = "SUMMARY.template"
 const GENDIR = "__src" // Can also have a leading .
 const GENPOSTS = "POSTS"
 const POSTMD = "index.md"
+const POSTDIR = "posts"
 
 var rep *log.Logger = log.New(os.Stdout, "" /* log.Ldate| */, log.Ltime)
 
