@@ -1,4 +1,4 @@
-package main
+package gen
 
 import (
 	"github.com/russross/blackfriday/v2"
@@ -208,7 +208,7 @@ func ProcessFilesMarkdown(cwd string, path string) {
 		return
 	}
 	for _, d := range entries {
-		if !d.IsDir() && isMarkdown(d.Name()) {
+		if !d.IsDir() && IsMarkdown(d.Name()) {
 			relPath, err := filepath.Rel(cwd, gdPath)
 			if err != nil {
 				relPath = gdPath

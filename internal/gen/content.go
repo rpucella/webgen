@@ -1,15 +1,28 @@
-package main
+package gen
 
 import (
 	"fmt"
 	"html/template"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
+
+type Content struct {
+	Title         string
+	Date          time.Time
+	FormattedDate string
+	Reading       string
+	Key           string
+	Body          template.HTML
+}
+
+// Exists here and in main. Why?
+var rep *log.Logger = log.New(os.Stdout, "" /* log.Ldate| */, log.Ltime)
 
 func ProcessFileContent(w io.Writer, fname string) error {
 	rep.Printf("%s\n", fname)
@@ -94,7 +107,7 @@ func ProcessFilesContent(cwd string, path string) {
 		return
 	}
 	for _, d := range entries {
-		if !d.IsDir() && isContent(d.Name()) {
+		if !d.IsDir() && IsContent(d.Name()) {
 			relPath, err := filepath.Rel(cwd, path)
 			if err != nil {
 				relPath = path
