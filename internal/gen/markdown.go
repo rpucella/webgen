@@ -44,6 +44,12 @@ func ProcessFileMarkdown(w io.Writer, fname string) error {
 	return nil
 }
 
+// This, or at least the STYLE, should really be a parameter to webgen.
+// Maybe a .css file in the .config/webgen folder?
+// More generally, the constants should move to a config file (JSON, Yaml, TOML, etc)
+// Cf: https://toml.io/en/
+// Parsing library for golang: https://github.com/BurntSushi/toml
+// Also: https://stackoverflow.com/questions/76402098/parsing-toml-without-a-known-structure/
 const draftTemplate = `
 <!DOCTYPE html>
 <html>
@@ -51,21 +57,21 @@ const draftTemplate = `
     <style>
       body {
           font-family: serif;
-          font-size: 24px;
-          margin: 0px 128px;
+          font-size: 14px;
+          margin: 32px 128px 32px 64px;
       }
 
       p {
-          line-height: 2.5;
-          margin: 32px 0;
+          line-height: 2;
+          margin: 16px 0;
       }
 
-      p code {
-          font-size: 20px;
+      code {
+          font-size: 12px;
       }
 
       pre {
-          font-size: 16px;
+          font-size: 12px;
           line-height: initial;
           margin: 32px 0;
           border-left: 4px solid #333333;
@@ -74,7 +80,7 @@ const draftTemplate = `
 
       h1, h2, h3, h4, h5, h6 {
           font-weight: normal;
-          margin: 64px 0 32px 0;
+          margin: 32px 0;
       }
 
     </style>
