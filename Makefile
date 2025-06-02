@@ -1,8 +1,9 @@
 build: fmt etags
 	go build -o bin/webgen ./cmd/webgen
+	go build -o bin/weblog ./cmd/weblog
 
 fmt:
-	go fmt ./cmd/webgen
+	go fmt ./cmd/*
 	go fmt ./internal/*
 
 test:
