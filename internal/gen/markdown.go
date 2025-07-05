@@ -74,7 +74,7 @@ const draftTemplate = `
           font-size: 12px;
           line-height: initial;
           margin: 32px 0;
-          border-left: 4px solid #333333;
+          border-left: 2px solid #888888;
           padding-left: 16px;
       }
 
