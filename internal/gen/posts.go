@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -17,7 +18,10 @@ type PostInfo struct {
 	Title   string
 	Date    time.Time
 	Reading string
-	Key     string
+	// Key is of the form YYYY/entry-name and is the folder under `posts/` that contains the generated post.
+	Key string
+	// Field `year` is not used but kept around in case it's needed.
+	Year int
 }
 
 func ExtractPosts(path string) ([]PostInfo, error) {
@@ -26,17 +30,31 @@ func ExtractPosts(path string) ([]PostInfo, error) {
 		return nil, err
 	}
 	posts := make([]PostInfo, 0)
-	for _, d := range entries {
-		if d.IsDir() && d.Name() != GENDIR && d.Name() != ("."+GENDIR) {
-			md, err := ioutil.ReadFile(filepath.Join(path, d.Name(), POSTMD))
+	for _, y := range entries {
+		// Only look at years.
+		if y.IsDir() {
+			year, err := strconv.Atoi(y.Name())
+			if err != nil {
+				continue
+			}
+			year = year
+			subEntries, err := os.ReadDir(filepath.Join(path, y.Name()))
 			if err != nil {
 				return nil, err
 			}
-			metadata, _, err := ExtractMetadata(md)
-			if err != nil {
-				return nil, err
+			for _, d := range subEntries {
+				if d.IsDir() && d.Name() != GENDIR && d.Name() != ("."+GENDIR) {
+					md, err := ioutil.ReadFile(filepath.Join(path, y.Name(), d.Name(), POSTMD))
+					if err != nil {
+						return nil, err
+					}
+					metadata, _, err := ExtractMetadata(md)
+					if err != nil {
+						return nil, err
+					}
+					posts = append(posts, PostInfo{metadata.Title, metadata.Date, metadata.Reading, filepath.Join(y.Name(), d.Name()), year})
+				}
 			}
-			posts = append(posts, PostInfo{metadata.Title, metadata.Date, metadata.Reading, d.Name()})
 		}
 	}
 	return posts, nil
@@ -86,7 +104,7 @@ func ProcessFilesPosts(cwd string, path string) {
 	}
 	// Copy post folders.
 	for _, p := range posts {
-		if err := os.Mkdir(filepath.Join(postDir, p.Key), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Join(postDir, p.Key), 0755); err != nil {
 			rep.Printf("ERROR: %s\n", err)
 			continue
 		}
